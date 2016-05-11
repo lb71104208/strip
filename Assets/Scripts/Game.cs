@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Game : MonoBehaviour {
 	
-	public SpriteRenderer ball;
+	public Ball ball;
 
 	bool isContructingLink = false;
 	List<Vector3> jointPos = new List<Vector3>();
@@ -14,7 +14,8 @@ public class Game : MonoBehaviour {
 		GameObject prefab = Resources.Load("track") as GameObject;
 		GameObject track = GameObject.Instantiate(prefab) as GameObject;
 		track.transform.parent = transform;
-		//instance.transform.localPosition = role.transform.localPosition + new Vector3(0, (UIManager.Instance.ScreenHeight-960)/2, 0);
+
+		ball.SetCurOnTrack (track.GetComponent<Track>());
 
 		prefab = Resources.Load("track") as GameObject;
 		track = GameObject.Instantiate(prefab) as GameObject;
