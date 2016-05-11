@@ -6,6 +6,8 @@ public class Game : MonoBehaviour {
 	
 	public Ball ball;
 
+	MyJoint _firstJoint;
+
 	bool isContructingLink = false;
 	List<Vector3> jointPos = new List<Vector3>();
 
@@ -22,6 +24,7 @@ public class Game : MonoBehaviour {
 		track.transform.parent = transform;
 		track.transform.localPosition = new Vector3 (0, 0);
 
+
 	}
 	
 	// Update is called once per frame
@@ -30,15 +33,23 @@ public class Game : MonoBehaviour {
 
 	}
 
-	public void CreateJoint(Vector3 pos)
+	public void CreateJoint(Vector3 pos, MyJoint joint)
 	{
 		jointPos.Add (pos);
 		if (isContructingLink) {
-			CreateLink();
-			jointPos.Clear();
+			CreateLink ();
+			jointPos.Clear ();
+			_firstJoint.NextJoint = joint;
+		} else {
+			_firstJoint = joint;
 		}
 		isContructingLink = !isContructingLink;
 
+	}
+
+	public void StartGame()
+	{
+		ball.StartDrop ();
 	}
 
 	void CreateLink()
@@ -53,10 +64,10 @@ public class Game : MonoBehaviour {
 		Vector3 pos1 = jointPos [1];
 
 		if (pos1.y > pos0.y) {
-			mesh.vertices = new Vector3[] { new Vector3(pos0.x+1, pos0.y-1, 0), 
-				new Vector3(pos0.x-1, pos0.y+1, 0), 
-				new Vector3(pos1.x-1, pos1.y+1, 0),
-				new Vector3(pos1.x+1, pos1.y-1, 0)};
+			mesh.vertices = new Vector3[] { new Vector3(pos0.x+0.1f, pos0.y-0.1f, 0), 
+				new Vector3(pos0.x-0.1f, pos0.y+0.1f, 0), 
+				new Vector3(pos1.x-0.1f, pos1.y+0.1f, 0),
+				new Vector3(pos1.x+0.1f, pos1.y-0.1f, 0)};
 
 		}
 

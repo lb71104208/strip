@@ -7,7 +7,8 @@ public class Track : MonoBehaviour {
 	public SpriteRenderer end;
 	// Use this for initialization
 	private Game _game;
-	private List<Vector3> _jointPos;
+	private List<MyJoint> _joints = new List<MyJoint>();
+	//private List<GameObject> _joints = new List<GameObject>();
 
 	void Start () {
 		_game = GameObject.Find ("GameObject").GetComponent<Game>();
@@ -32,22 +33,30 @@ public class Track : MonoBehaviour {
 	void createJoint(Vector2 pos) //pos is WorldPosition
 	{
 
-		Sprite joint = Resources.Load<Sprite>("Images/PowerUp");
-		// create gameobject
-		GameObject jointObj = new GameObject();
-		jointObj.AddComponent<SpriteRenderer>();
+//		Sprite joint = Resources.Load<Sprite>("Images/PowerUp");
+//		// create gameobject
+//		GameObject jointObj = new GameObject();
+//		jointObj.AddComponent<SpriteRenderer>();
+//
+//		SpriteRenderer SR = jointObj.GetComponent<SpriteRenderer>();
+//		SR.sprite = joint;
+//		jointObj.transform.parent = transform;
+//		jointObj.transform.localPosition = transform.InverseTransformPoint (pos);
 
-		SpriteRenderer SR = jointObj.GetComponent<SpriteRenderer>();
-		SR.sprite = joint;
-		jointObj.transform.parent = transform;
-		jointObj.transform.localPosition = transform.InverseTransformPoint (pos);
+		GameObject prefab = Resources.Load("joint") as GameObject;
+		GameObject joint = GameObject.Instantiate(prefab) as GameObject;
+		joint.transform.parent = transform;
+		joint.transform.localPosition = transform.InverseTransformPoint (pos);
 
-		_game.CreateJoint (pos);
-		_jointPos.Add (pos);
+
+		_game.CreateJoint (pos, joint.GetComponent<MyJoint>());
+		_joints.Add (joint.GetComponent<MyJoint>());
+
+		joint.GetComponent<MyJoint> ().CurOnTrack = this;
 	}
 
-	public List<Vector3> getJointPositions()
+	public List<MyJoint> getJoints()
 	{
-		return _jointPos;
+		return _joints;
 	}
 }
