@@ -11,19 +11,27 @@ public class Game : MonoBehaviour {
 	bool isContructingLink = false;
 	List<Vector3> jointPos = new List<Vector3>();
 
+	enum GameState {Editing,Playing};
+
+	GameState _gameState;
+
 	// Use this for initialization
 	void Start () {
 		GameObject prefab = Resources.Load("track") as GameObject;
 		GameObject track = GameObject.Instantiate(prefab) as GameObject;
 		track.transform.parent = transform;
+		track.transform.localPosition = new Vector3 (-1.0f, 0);
+		track.GetComponent<Track> ().SetIsDest (false);
 
 		ball.SetCurOnTrack (track.GetComponent<Track>());
 
 		prefab = Resources.Load("track") as GameObject;
 		track = GameObject.Instantiate(prefab) as GameObject;
 		track.transform.parent = transform;
-		track.transform.localPosition = new Vector3 (0, 0);
+		track.transform.localPosition = new Vector3 (1.0f, 0);
+		track.GetComponent<Track> ().SetIsDest (true);
 
+		_gameState = GameState.Editing;
 
 	}
 	
@@ -49,7 +57,10 @@ public class Game : MonoBehaviour {
 
 	public void StartGame()
 	{
-		ball.StartDrop ();
+		if (_gameState == GameState.Editing) {
+			ball.StartDrop ();
+			_gameState = GameState.Playing;
+		}
 	}
 
 	void CreateLink()
@@ -82,6 +93,8 @@ public class Game : MonoBehaviour {
 
 		mesh.uv = new Vector2[] {new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)};
 		mesh.triangles = new int[] {0, 1, 2,2,3,0};
+
+		link.GetComponent<MeshRenderer>().material = Resources.Load("Materials/link", typeof(Material)) as Material;
 	}
 	
 }

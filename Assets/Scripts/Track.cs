@@ -8,7 +8,7 @@ public class Track : MonoBehaviour {
 	// Use this for initialization
 	private Game _game;
 	private List<MyJoint> _joints = new List<MyJoint>();
-	//private List<GameObject> _joints = new List<GameObject>();
+	private bool _isDest; 
 
 	void Start () {
 		_game = GameObject.Find ("GameObject").GetComponent<Game>();
@@ -30,23 +30,30 @@ public class Track : MonoBehaviour {
 		}
 	}
 
+	public void SetIsDest(bool dest)
+	{
+		_isDest = dest;
+		if (dest) {
+			end.color = Color.green;
+		} else {
+			end.color = Color.white;
+		}
+	}
+
+	public bool GetIsDest()
+	{
+		return _isDest;
+	}
+
 	void createJoint(Vector2 pos) //pos is WorldPosition
 	{
-
-//		Sprite joint = Resources.Load<Sprite>("Images/PowerUp");
-//		// create gameobject
-//		GameObject jointObj = new GameObject();
-//		jointObj.AddComponent<SpriteRenderer>();
-//
-//		SpriteRenderer SR = jointObj.GetComponent<SpriteRenderer>();
-//		SR.sprite = joint;
-//		jointObj.transform.parent = transform;
-//		jointObj.transform.localPosition = transform.InverseTransformPoint (pos);
 
 		GameObject prefab = Resources.Load("joint") as GameObject;
 		GameObject joint = GameObject.Instantiate(prefab) as GameObject;
 		joint.transform.parent = transform;
-		joint.transform.localPosition = transform.InverseTransformPoint (pos);
+
+		Vector3 localPos = transform.InverseTransformPoint (pos);
+		joint.transform.localPosition = new Vector3 (0, localPos.y);
 
 
 		_game.CreateJoint (pos, joint.GetComponent<MyJoint>());
