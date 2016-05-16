@@ -24,7 +24,6 @@ public class Track : MonoBehaviour {
 			if (this.GetComponent<Collider2D>() == Physics2D.OverlapPoint(touchPos))
 			{
 				//your code
-				Debug.Log("touch track");
 				this.createJoint(touchPos);
 			}
 		}
@@ -47,23 +46,38 @@ public class Track : MonoBehaviour {
 
 	void createJoint(Vector2 pos) //pos is WorldPosition
 	{
+		if (_game.GetFirstJoint () == null || _game.GetFirstJoint ().CurOnTrack != this) {
+			GameObject prefab = Resources.Load("joint") as GameObject;
+			GameObject joint = GameObject.Instantiate(prefab) as GameObject;
+			joint.transform.parent = transform;
+			
+			Vector3 localPos = transform.InverseTransformPoint (pos);
+			joint.transform.localPosition = new Vector3 (0, localPos.y);
+			
+			joint.GetComponent<MyJoint> ().CurOnTrack = this;
+			
+			_game.CreateJoint (pos, joint.GetComponent<MyJoint>());
+			_joints.Add (joint.GetComponent<MyJoint>());
+		}
+		else
+		{
+			Debug.Log("cannot create link on same track");
+		}
+	
 
-		GameObject prefab = Resources.Load("joint") as GameObject;
-		GameObject joint = GameObject.Instantiate(prefab) as GameObject;
-		joint.transform.parent = transform;
-
-		Vector3 localPos = transform.InverseTransformPoint (pos);
-		joint.transform.localPosition = new Vector3 (0, localPos.y);
-
-
-		_game.CreateJoint (pos, joint.GetComponent<MyJoint>());
-		_joints.Add (joint.GetComponent<MyJoint>());
-
-		joint.GetComponent<MyJoint> ().CurOnTrack = this;
 	}
 
 	public List<MyJoint> getJoints()
 	{
 		return _joints;
+	}
+
+	public void Reset()
+	{
+		foreach (MyJoint joint in _joints) {
+			Destroy(joint.gameObject);
+		}
+
+		_joints.Clear ();
 	}
 }

@@ -4,11 +4,16 @@ using System.Collections;
 public class Ball : MonoBehaviour {
 
 	float JOINT_DIAMETER = 0.3f;
+
 	Track _curOnTrack;
 	MyJoint _targetJoint;
-	float _moveSpeed  = 1f;
+	MyJoint _curLandingJoint;
+
+	float _moveSpeed  = 2f;
 	float _moveSpeedX = 0;
 	float _moveSpeedY = 0;
+	Vector3 _originPosition;
+	
 
 	enum BallState {Ready,FreeDrop, MoveToOtherTrack};
 
@@ -17,6 +22,14 @@ public class Ball : MonoBehaviour {
 	void Start () {
 		_curState = BallState.Ready;
 		GetComponent<Rigidbody2D> ().gravityScale = 0;
+		_originPosition = transform.localPosition;
+	}
+
+	public void Reset()
+	{
+		_curState = BallState.Ready;
+		GetComponent<Rigidbody2D> ().gravityScale = 0;
+		transform.localPosition = _originPosition;
 	}
 	
 	// Update is called once per frame
@@ -29,7 +42,7 @@ public class Ball : MonoBehaviour {
 		if (_curState == BallState.FreeDrop) {
 		
 				
-			if (ReachAJoint()!= null) {
+			if (ReachAJoint()!= null && ReachAJoint()!= _curLandingJoint) {
 				Debug.Log ("hit joint");
 				MyJoint joint = ReachAJoint();
 				_targetJoint = joint.NextJoint;
@@ -48,6 +61,7 @@ public class Ball : MonoBehaviour {
 			if (ReachAJoint()!= null) {
 				Debug.Log("reach another track");
 				transform.localPosition =  _curOnTrack.transform.TransformPoint (ReachAJoint().transform.localPosition);
+				_curLandingJoint = ReachAJoint();
 				StartDrop();
 			}
 
@@ -57,11 +71,12 @@ public class Ball : MonoBehaviour {
 
 	MyJoint ReachAJoint()
 	{
-		float thisY = transform.localPosition.y;
+		Vector3 thisPos = transform.localPosition;
 		foreach (MyJoint joint in _curOnTrack.getJoints()) {
-			float jointY = _curOnTrack.transform.TransformPoint (joint.transform.localPosition).y;
+			Vector3 targetPos = _curOnTrack.transform.TransformPoint (joint.transform.localPosition);
+			float dis = Mathf.Sqrt(Mathf.Pow(thisPos.x-targetPos.x,2) + Mathf.Pow(thisPos.y-targetPos.y,2) ) ;
 			
-			if (Mathf.Abs (thisY - jointY) < JOINT_DIAMETER / 2)
+			if (dis < JOINT_DIAMETER / 2)
 			{
 				return joint;
 			}
@@ -90,8 +105,14 @@ public class Ball : MonoBehaviour {
 		Debug.Log ("target " + targetWorldPosition);
 
 		float angle = Mathf.Atan ((targetWorldPosition.y - transform.localPosition.y) / (targetWorldPosition.x - transform.localPosition.x));
+
 		_moveSpeedX = _moveSpeed * Mathf.Cos (angle);
 		_moveSpeedY = _moveSpeed * Mathf.Sin (angle);
+
+		if (targetWorldPosition.x < transform.localPosition.x) {
+			_moveSpeedX = -_moveSpeed * Mathf.Cos (angle);
+			_moveSpeedY = -_moveSpeed * Mathf.Sin (angle);
+		}
 
 		Debug.Log ("move speed x y " + _moveSpeedX + " " + _moveSpeedY);
 		GetComponent<Rigidbody2D> ().velocity = new Vector2 (_moveSpeedX, _moveSpeedY);
@@ -100,7 +121,8 @@ public class Ball : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D collision) 
 	{
 
-		this.gameObject.GetComponent<Rigidbody2D> ().isKinematic = true;
+		GetComponent<Rigidbody2D> ().gravityScale = 0;
+		GetComponent<Rigidbody2D> ().velocity = new Vector2 (0, 0);
 
 		if (_curOnTrack.GetIsDest () == true) {
 			Debug.Log ("success !");
