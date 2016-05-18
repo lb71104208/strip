@@ -8,7 +8,7 @@ public class MyJoint : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		this.gameObject.GetComponent<SpriteRenderer> ().sortingLayerName = "Game Oject"; 
 	}
 	
 	// Update is called once per frame

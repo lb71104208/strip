@@ -47,7 +47,7 @@ public class Ball : MonoBehaviour {
 				MyJoint joint = ReachAJoint();
 				_targetJoint = joint.NextJoint;
 
-				if(_targetJoint != null)
+				if(_targetJoint != null && _targetJoint.transform.localPosition.y < joint.transform.localPosition.y)
 				{
 					transform.localPosition =  _curOnTrack.transform.TransformPoint (joint.transform.localPosition);
 					_curState = BallState.MoveToOtherTrack;

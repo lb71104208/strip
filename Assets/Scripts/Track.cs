@@ -46,6 +46,11 @@ public class Track : MonoBehaviour {
 
 	void createJoint(Vector2 pos) //pos is WorldPosition
 	{
+		if (_game.LinksAvaiable == 0) {
+			Debug.Log("no more available links!");
+			return;
+		}
+
 		if (_game.GetFirstJoint () == null || _game.GetFirstJoint ().CurOnTrack != this) {
 			GameObject prefab = Resources.Load("joint") as GameObject;
 			GameObject joint = GameObject.Instantiate(prefab) as GameObject;
@@ -79,5 +84,10 @@ public class Track : MonoBehaviour {
 		}
 
 		_joints.Clear ();
+	}
+
+	public void CreateBouns()
+	{
+
 	}
 }

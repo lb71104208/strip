@@ -1,10 +1,16 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour {
 	
 	public Ball ball;
+	public int Score;
+	public int LinksAvaiable;
+
+	public Text TextScore;
+	public Text TextLinksAvailable;
 
 	MyJoint _firstJoint;
 
@@ -38,6 +44,13 @@ public class Game : MonoBehaviour {
 
 		_gameState = GameState.Editing;
 
+		CreateUI ();
+	}
+
+	void CreateUI()
+	{
+		TextScore.text = Score.ToString();
+		TextLinksAvailable.text = LinksAvaiable.ToString();
 	}
 	
 	// Update is called once per frame
@@ -57,7 +70,8 @@ public class Game : MonoBehaviour {
 				joint.NextJoint = _firstJoint;
 				_firstJoint = null;
 
-
+			LinksAvaiable--;
+			TextLinksAvailable.text =  LinksAvaiable.ToString();
 
 		} else {
 			_firstJoint = joint;
