@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class NewBehaviourScript : MonoBehaviour {
+public class Link : MonoBehaviour {
 
 	public MyJoint JointH;
 	public MyJoint JointL;
 
+	private Game _game;
 	// Use this for initialization
 	void Start () {
-	
+		_game = GameObject.Find ("GameObject").GetComponent<Game>();
 	}
 	
 	// Update is called once per frame
@@ -18,10 +19,10 @@ public class NewBehaviourScript : MonoBehaviour {
 			
 			Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			Vector2 touchPos = new Vector2(wp.x, wp.y);
-			if (this.GetComponent<Collider2D>() == Physics2D.OverlapPoint(touchPos))
+			if (this.GetComponent<PolygonCollider2D>() == Physics2D.OverlapPoint(touchPos))
 			{
 				//your code
-				Debug.Log("click link");
+				_game.RemoveLink(this);
 			}
 		}
 	}

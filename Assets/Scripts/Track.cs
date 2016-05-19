@@ -109,5 +109,11 @@ public class Track : MonoBehaviour {
 
 		_joints.Clear ();
 	}
+
+	public void RemoveJoint(MyJoint joint)
+	{
+		_joints.Remove (joint);
+		Destroy (joint.gameObject);
+	}
 	
 }

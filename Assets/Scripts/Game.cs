@@ -68,7 +68,7 @@ public class Game : MonoBehaviour {
 		jointPos.Add (pos);
 		if (isContructingLink) {
 
-				CreateLink ();
+				CreateLink (_firstJoint, joint);
 				jointPos.Clear ();
 				_firstJoint.NextJoint = joint;
 				joint.NextJoint = _firstJoint;
@@ -112,7 +112,7 @@ public class Game : MonoBehaviour {
 		CreateUI ();
 	}
 
-	void CreateLink()
+	void CreateLink(MyJoint joint1, MyJoint joint2)
 	{
 		GameObject link = new GameObject ();
 		link.AddComponent<MeshFilter>();
@@ -123,43 +123,48 @@ public class Game : MonoBehaviour {
 		Vector3 pos0 = jointPos [0];
 		Vector3 pos1 = jointPos [1];
 
+		Vector2 point0 = new Vector2();
+		Vector2 point1 = new Vector2();
+		Vector2 point2 = new Vector2();
+		Vector2 point3 = new Vector2();
+
 		if (pos1.x > pos0.x) {
 			if (pos1.y > pos0.y) {
-				mesh.vertices = new Vector3[] { new Vector3 (pos0.x + 0.1f, pos0.y - 0.1f, 0), 
-					new Vector3 (pos0.x - 0.1f, pos0.y + 0.1f, 0), 
-					new Vector3 (pos1.x - 0.1f, pos1.y + 0.1f, 0),
-					new Vector3 (pos1.x + 0.1f, pos1.y - 0.1f, 0)};
+				point0 = new Vector2 (pos0.x + 0.1f, pos0.y - 0.1f);
+				point1 = new Vector2 (pos0.x - 0.1f, pos0.y + 0.1f);
+				point2 = new Vector2 (pos1.x - 0.1f, pos1.y + 0.1f);
+				point3 = new Vector2 (pos1.x + 0.1f, pos1.y - 0.1f);
 				
 			} else if (pos1.y < pos0.y) {
-				mesh.vertices = new Vector3[] { new Vector3 (pos0.x - 0.1f, pos0.y - 0.1f, 0), 
-					new Vector3 (pos0.x + 0.1f, pos0.y + 0.1f, 0), 
-					new Vector3 (pos1.x + 0.1f, pos1.y + 0.1f, 0),
-					new Vector3 (pos1.x - 0.1f, pos1.y - 0.1f, 0)};
+				point0 = new Vector2 (pos0.x - 0.1f, pos0.y - 0.1f);
+				point1 = new Vector2 (pos0.x + 0.1f, pos0.y + 0.1f);
+				point2 = new Vector2 (pos1.x + 0.1f, pos1.y + 0.1f);
+				point3 = new Vector2 (pos1.x - 0.1f, pos1.y - 0.1f);
+
 				
 			}
 		} else {
 
 			if (pos1.y > pos0.y) {
-				mesh.vertices = new Vector3[] {
-					new Vector3 (pos1.x - 0.1f, pos1.y - 0.1f, 0),
-					new Vector3 (pos1.x + 0.1f, pos1.y + 0.1f, 0),
-					new Vector3 (pos0.x + 0.1f, pos0.y + 0.1f, 0), 
-					new Vector3 (pos0.x - 0.1f, pos0.y - 0.1f, 0) 
-
-					};
+				point0 = new Vector2 (pos1.x - 0.1f, pos1.y - 0.1f);
+				point1 = new Vector2 (pos1.x + 0.1f, pos1.y + 0.1f);
+				point2 = new Vector2 (pos0.x + 0.1f, pos0.y + 0.1f);
+				point3 = new Vector2 (pos0.x - 0.1f, pos0.y - 0.1f);
 				
 			} else if (pos1.y < pos0.y) {
-				mesh.vertices = new Vector3[] { 
-					new Vector3 (pos1.x + 0.1f, pos1.y - 0.1f, 0),
-					new Vector3 (pos1.x - 0.1f, pos1.y + 0.1f, 0),
-					new Vector3 (pos0.x - 0.1f, pos0.y + 0.1f, 0), 
-					new Vector3 (pos0.x + 0.1f, pos0.y - 0.1f, 0) 
-					};
+				point0 = new Vector2 (pos1.x + 0.1f, pos1.y - 0.1f);
+				point1 = new Vector2 (pos1.x - 0.1f, pos1.y + 0.1f);
+				point2 = new Vector2 (pos0.x - 0.1f, pos0.y + 0.1f);
+				point3 = new Vector2 (pos0.x + 0.1f, pos0.y - 0.1f);
+
 				
 			}
 		}
 
-
+		mesh.vertices = new Vector3[] { new Vector3 (point0.x, point0.y, 0), 
+										new Vector3 (point1.x, point1.y, 0), 
+										new Vector3 (point2.x, point2.y, 0), 
+										new Vector3 (point3.x, point3.y, 0)};
 		mesh.uv = new Vector2[] {new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)};
 		mesh.triangles = new int[] {0, 1, 2,2,3,0};
 
@@ -167,15 +172,23 @@ public class Game : MonoBehaviour {
 
 		PolygonCollider2D polygonCollider = link.AddComponent<PolygonCollider2D>();
 		polygonCollider.points = new Vector2[] {
-			new Vector2 (pos1.x - 0.1f, pos1.y - 0.1f),
-			new Vector2 (pos1.x + 0.1f, pos1.y + 0.1f),
-			new Vector2 (pos0.x + 0.1f, pos0.y + 0.1f), 
-			new Vector2 (pos0.x - 0.1f, pos0.y - 0.1f) 
+			point0, point1, point2, point3
 		};
 
 		polygonCollider.SetPath(0,  polygonCollider.points);
+		polygonCollider.isTrigger = true;
+
+		Link linkScript =  link.AddComponent<Link> ();
+		if (joint1.transform.localPosition.y > joint2.transform.localPosition.y) {
+			linkScript.JointH = joint1;
+			linkScript.JointL = joint2;
+		} else {
+			linkScript.JointH = joint2;
+			linkScript.JointL = joint1;
+		}
 
 		_links.Add (link);
+
 	}
 
 	public MyJoint GetFirstJoint()
@@ -196,6 +209,19 @@ public class Game : MonoBehaviour {
 		} else {
 			Debug.Log("Fail Not enough score!");
 		}
+	}
+
+	public void RemoveLink(Link link)
+	{
+		_links.Remove (link.gameObject);
+
+		link.JointH.CurOnTrack.RemoveJoint (link.JointH);
+		link.JointL.CurOnTrack.RemoveJoint (link.JointL);
+
+		Destroy (link.gameObject);
+
+		LinksAvaiable++;
+		TextLinksAvailable.text =  LinksAvaiable.ToString();
 	}
 	
 }
