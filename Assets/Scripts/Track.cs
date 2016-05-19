@@ -12,6 +12,30 @@ public class Track : MonoBehaviour {
 
 	void Start () {
 		_game = GameObject.Find ("GameObject").GetComponent<Game>();
+		CreateBounses ();
+	}
+
+	void CreateBounses()
+	{
+		float height = this.GetComponent<SpriteRenderer> ().sprite.bounds.size.y;
+		Debug.Log ("track height " + height);
+
+		CreateBouns (height / 4);
+		CreateBouns (0);
+		CreateBouns (-height / 4);
+	}
+
+	void CreateBouns(float y)
+	{
+		GameObject prefab = Resources.Load("bonus") as GameObject;
+		GameObject bouns = GameObject.Instantiate(prefab) as GameObject;
+		bouns.transform.parent = transform;
+
+		int point = Random.Range (0, 6);
+		bouns.GetComponent<MyBouns> ().SetPoint (point);
+		
+		Vector3 localPos = new Vector3 (0, y);
+		bouns.transform.localPosition = localPos;
 	}
 	
 	// Update is called once per frame
@@ -85,9 +109,5 @@ public class Track : MonoBehaviour {
 
 		_joints.Clear ();
 	}
-
-	public void CreateBouns()
-	{
-
-	}
+	
 }

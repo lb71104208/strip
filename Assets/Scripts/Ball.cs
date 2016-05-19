@@ -13,7 +13,8 @@ public class Ball : MonoBehaviour {
 	float _moveSpeedX = 0;
 	float _moveSpeedY = 0;
 	Vector3 _originPosition;
-	
+
+	public Game TheGame;
 
 	enum BallState {Ready,FreeDrop, MoveToOtherTrack};
 
@@ -125,9 +126,10 @@ public class Ball : MonoBehaviour {
 		GetComponent<Rigidbody2D> ().velocity = new Vector2 (0, 0);
 
 		if (_curOnTrack.GetIsDest () == true) {
-			Debug.Log ("success !");
+			TheGame.CheckSuccess();
+
 		} else {
-			Debug.Log("fail!");
+			Debug.Log("Fail Wrong End !");
 		}
 	}
 

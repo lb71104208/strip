@@ -11,6 +11,9 @@ public class Game : MonoBehaviour {
 
 	public Text TextScore;
 	public Text TextLinksAvailable;
+	public Text TextScoreRequired;
+
+	int _scoreRequired = 10;
 
 	MyJoint _firstJoint;
 
@@ -49,8 +52,9 @@ public class Game : MonoBehaviour {
 
 	void CreateUI()
 	{
-		TextScore.text = Score.ToString();
+		TextScore.text = "Score " + Score.ToString();
 		TextLinksAvailable.text = LinksAvaiable.ToString();
+		TextScoreRequired.text = "Score Required  " + _scoreRequired;
 	}
 	
 	// Update is called once per frame
@@ -102,6 +106,10 @@ public class Game : MonoBehaviour {
 			Destroy(link);
 		}
 		_links.Clear ();
+		Score = 0;
+		LinksAvaiable = 1;
+
+		CreateUI ();
 	}
 
 	void CreateLink()
@@ -157,12 +165,37 @@ public class Game : MonoBehaviour {
 
 		link.GetComponent<MeshRenderer>().material = Resources.Load("Materials/link", typeof(Material)) as Material;
 
+		PolygonCollider2D polygonCollider = link.AddComponent<PolygonCollider2D>();
+		polygonCollider.points = new Vector2[] {
+			new Vector2 (pos1.x - 0.1f, pos1.y - 0.1f),
+			new Vector2 (pos1.x + 0.1f, pos1.y + 0.1f),
+			new Vector2 (pos0.x + 0.1f, pos0.y + 0.1f), 
+			new Vector2 (pos0.x - 0.1f, pos0.y - 0.1f) 
+		};
+
+		polygonCollider.SetPath(0,  polygonCollider.points);
+
 		_links.Add (link);
 	}
 
 	public MyJoint GetFirstJoint()
 	{
 		return _firstJoint;
+	}
+
+	public void GetScore(int score)
+	{
+		Score += score;
+		TextScore.text = "Score " + Score.ToString ();
+	}
+
+	public void CheckSuccess()
+	{
+		if (Score >= _scoreRequired) {
+			Debug.Log ("Success !");
+		} else {
+			Debug.Log("Fail Not enough score!");
+		}
 	}
 	
 }
