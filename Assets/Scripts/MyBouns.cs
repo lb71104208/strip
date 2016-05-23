@@ -7,7 +7,7 @@ public class MyBouns : MonoBehaviour {
 	public int Point;
 	Game _game;
 
-	List<Color> _scoreColor = new List<Color> {Color.black, Color.white, Color.green, Color.blue, Color.cyan, Color.yellow};
+	List<Color> _scoreColor = new List<Color> {Color.white, Color.yellow};
 	// Use this for initialization
 	void Start () {
 		_game = GameObject.Find ("GameObject").GetComponent<Game>();
@@ -22,10 +22,8 @@ public class MyBouns : MonoBehaviour {
 	public void SetPoint(int point)
 	{
 		gameObject.GetComponent<SpriteRenderer> ().color = _scoreColor [point];
-		if (point == 0)
-			point = -1;
 
-		Point = point;
+		Point = point+1;
 	}
 
 	void OnTriggerEnter2D(Collider2D coll)

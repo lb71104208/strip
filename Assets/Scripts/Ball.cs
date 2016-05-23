@@ -122,6 +122,8 @@ public class Ball : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D collision) 
 	{
 
+		Debug.Log ("collision name " + collision.gameObject.name);
+
 		GetComponent<Rigidbody2D> ().gravityScale = 0;
 		GetComponent<Rigidbody2D> ().velocity = new Vector2 (0, 0);
 

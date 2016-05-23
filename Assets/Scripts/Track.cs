@@ -31,7 +31,7 @@ public class Track : MonoBehaviour {
 		GameObject bouns = GameObject.Instantiate(prefab) as GameObject;
 		bouns.transform.parent = transform;
 
-		int point = Random.Range (0, 6);
+		int point = Random.Range (0, 2);
 		bouns.GetComponent<MyBouns> ().SetPoint (point);
 		
 		Vector3 localPos = new Vector3 (0, y);
